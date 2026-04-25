@@ -24,6 +24,8 @@ jobs:
           node-version: 20
           cache: 'pnpm'
       - run: pnpm install
+      - name: Security Audit
+        run: pnpm audit --audit-level=high
       - run: pnpm lint
       - run: pnpm test -- --run
       - run: pnpm build
