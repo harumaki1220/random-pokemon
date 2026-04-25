@@ -31,9 +31,9 @@ function App() {
 
         const data = await res.json();
         setPokemonData(data);
-      } catch (error) {
+      } catch (err) {
         setError(true);
-        console.error("通信エラー:", error);
+        console.error("通信エラー:", err);
       } finally {
         setLoading(false);
       }
