@@ -12,9 +12,18 @@ function App() {
   const [pokemonData, setPokemonData] = useState<PokemonData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [cache, setCache] = useState<Record<number, PokemonData>>({});
 
   useEffect(() => {
     if (pokemonId === null) return;
+
+    // キャッシュ確認
+    if (cache[pokemonId]) {
+      setPokemonData(cache[pokemonId]);
+      setError(false);
+      return;
+    }
+
     const fetchPokemon = async () => {
       setError(false);
       try {
@@ -31,6 +40,9 @@ function App() {
 
         const data = await res.json();
         setPokemonData(data);
+
+        // 取得したデータをキャッシュに保存
+        setCache((prev) => ({ ...prev, [pokemonId]: data }));
       } catch (err) {
         setError(true);
         console.error("通信エラー:", err);
