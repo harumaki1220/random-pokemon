@@ -11,8 +11,8 @@ const loadCacheFromStorage = (): Record<number, PokemonData> => {
   try {
     const savedCache = localStorage.getItem("pokemonCache");
     return savedCache ? JSON.parse(savedCache) : {};
-  } catch (error) {
-    console.error("Failed to parse localStorage", error);
+  } catch (err) {
+    console.error("Failed to parse localStorage", err);
     return {};
   }
 };
