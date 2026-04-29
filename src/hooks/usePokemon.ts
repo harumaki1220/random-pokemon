@@ -74,5 +74,9 @@ export const usePokemon = () => {
     setPokemonId(randomId);
   };
 
-  return { pokemonData, loading, error, getRandomPokemon };
+  const getPokemonById = (id: number) => {
+    setPokemonId(id);
+  };
+
+  return { pokemonData, loading, error, getRandomPokemon, getPokemonById };
 };

@@ -69,3 +69,26 @@ test("API取得に失敗したとき、error状態がtrueになること", async
   expect(result.current.pokemonData).toBeNull();
   expect(result.current.loading).toBe(false);
 });
+
+test("キャッシュがある場合、APIは呼ばれずにキャッシュからデータが返ること", async () => {
+  const mockCacheData = {
+    name: "charmeleon",
+    sprites: { front_default: "dummy5.png" },
+  };
+  localStorage.setItem("pokemonCache", JSON.stringify({ 5: mockCacheData }));
+
+  const fetchSpy = vi.fn();
+  vi.stubGlobal("fetch", fetchSpy);
+
+  const { result } = renderHook(() => usePokemon());
+
+  act(() => {
+    result.current.getPokemonById(5);
+  });
+
+  await waitFor(() => {
+    expect(result.current.pokemonData).toEqual(mockCacheData);
+  });
+
+  expect(fetchSpy).toHaveBeenCalledTimes(0);
+});
