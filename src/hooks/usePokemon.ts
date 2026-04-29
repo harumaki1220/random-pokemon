@@ -33,9 +33,7 @@ export const usePokemon = () => {
         );
 
         if (!res.ok) {
-          throw new Error(
-            `ポケモンが見つかりませんでした (Status: ${res.status})`,
-          );
+          throw new Error(`Pokemon not found (Status: ${res.status})`);
         }
 
         const data = await res.json();
@@ -43,7 +41,7 @@ export const usePokemon = () => {
         cache.current[pokemonId] = data;
       } catch (err) {
         setError(true);
-        console.error("通信エラー:", err);
+        console.error("Fetch error:", err);
       } finally {
         setLoading(false);
       }
