@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface PokemonData {
   name: string;
@@ -12,14 +12,14 @@ function App() {
   const [pokemonData, setPokemonData] = useState<PokemonData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  const [cache, setCache] = useState<Record<number, PokemonData>>({});
+
+  const cache = useRef<Record<number, PokemonData>>({});
 
   useEffect(() => {
     if (pokemonId === null) return;
 
-    // キャッシュ確認
-    if (cache[pokemonId]) {
-      setPokemonData(cache[pokemonId]);
+    if (cache.current[pokemonId]) {
+      setPokemonData(cache.current[pokemonId]);
       setError(false);
       return;
     }
@@ -40,9 +40,7 @@ function App() {
 
         const data = await res.json();
         setPokemonData(data);
-
-        // 取得したデータをキャッシュに保存
-        setCache((prev) => ({ ...prev, [pokemonId]: data }));
+        cache.current[pokemonId] = data;
       } catch (err) {
         setError(true);
         console.error("通信エラー:", err);
