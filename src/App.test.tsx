@@ -5,6 +5,7 @@ import "@testing-library/jest-dom";
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  localStorage.clear();
 });
 
 test("読み込み中はボタンが無効化されていること", () => {

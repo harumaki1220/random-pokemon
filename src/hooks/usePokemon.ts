@@ -7,13 +7,23 @@ export interface PokemonData {
   };
 }
 
+const loadCacheFromStorage = (): Record<number, PokemonData> => {
+  try {
+    const savedCache = localStorage.getItem("pokemonCache");
+    return savedCache ? JSON.parse(savedCache) : {};
+  } catch (error) {
+    console.error("Failed to parse localStorage", error);
+    return {};
+  }
+};
+
 export const usePokemon = () => {
   const [pokemonId, setPokemonId] = useState<number | null>(null);
   const [pokemonData, setPokemonData] = useState<PokemonData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
-  const cache = useRef<Record<number, PokemonData>>({});
+  const cache = useRef<Record<number, PokemonData>>(loadCacheFromStorage());
 
   useEffect(() => {
     if (pokemonId === null) return;
@@ -38,7 +48,9 @@ export const usePokemon = () => {
 
         const data = await res.json();
         setPokemonData(data);
+
         cache.current[pokemonId] = data;
+        localStorage.setItem("pokemonCache", JSON.stringify(cache.current));
       } catch (err) {
         setError(true);
         console.error("Fetch error:", err);
