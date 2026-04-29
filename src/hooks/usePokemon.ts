@@ -46,10 +46,17 @@ export const usePokemon = () => {
           throw new Error(`Pokemon not found (Status: ${res.status})`);
         }
 
-        const data = await res.json();
-        setPokemonData(data);
+        const rawData = await res.json();
 
-        cache.current[pokemonId] = data;
+        const slimData: PokemonData = {
+          name: rawData.name,
+          sprites: {
+            front_default: rawData.sprites.front_default,
+          },
+        };
+
+        setPokemonData(slimData);
+        cache.current[pokemonId] = slimData;
         localStorage.setItem("pokemonCache", JSON.stringify(cache.current));
       } catch (err) {
         setError(true);
