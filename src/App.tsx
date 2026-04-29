@@ -1,62 +1,7 @@
-import { useState, useEffect, useRef } from "react";
-
-interface PokemonData {
-  name: string;
-  sprites: {
-    front_default: string;
-  };
-}
+import { usePokemon } from "./hooks/usePokemon";
 
 function App() {
-  const [pokemonId, setPokemonId] = useState<number | null>(null);
-  const [pokemonData, setPokemonData] = useState<PokemonData | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-
-  const cache = useRef<Record<number, PokemonData>>({});
-
-  useEffect(() => {
-    if (pokemonId === null) return;
-
-    if (cache.current[pokemonId]) {
-      setPokemonData(cache.current[pokemonId]);
-      setError(false);
-      return;
-    }
-
-    const fetchPokemon = async () => {
-      setError(false);
-      try {
-        setLoading(true);
-        const res = await fetch(
-          `https://pokeapi.co/api/v2/pokemon/${pokemonId}`,
-        );
-
-        if (!res.ok) {
-          throw new Error(
-            `ポケモンが見つかりませんでした (Status: ${res.status})`,
-          );
-        }
-
-        const data = await res.json();
-        setPokemonData(data);
-        cache.current[pokemonId] = data;
-      } catch (err) {
-        setError(true);
-        console.error("通信エラー:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPokemon();
-  }, [pokemonId]);
-
-  const getRandomPokemon = () => {
-    // ポケモンの図鑑番号は現在1025まで
-    const randomId = Math.floor(Math.random() * 1025) + 1;
-    setPokemonId(randomId);
-  };
+  const { pokemonData, loading, error, getRandomPokemon } = usePokemon();
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-slate-100 p-4">
