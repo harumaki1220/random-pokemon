@@ -19,6 +19,7 @@ test("getRandomPokemonを実行すると、APIが呼ばれてデータがセッ�
   const mockData = {
     name: "pikachu",
     sprites: { front_default: "dummy.png" },
+    types: [{ type: { name: "electric" } }],
   };
 
   vi.stubGlobal(
@@ -74,6 +75,7 @@ test("キャッシュがある場合、APIは呼ばれずにキャッシュか�
   const mockCacheData = {
     name: "charmeleon",
     sprites: { front_default: "dummy5.png" },
+    types: [{ type: { name: "fire" } }],
   };
   localStorage.setItem("pokemonCache", JSON.stringify({ 5: mockCacheData }));
 

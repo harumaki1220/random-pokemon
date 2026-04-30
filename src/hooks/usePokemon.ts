@@ -5,6 +5,11 @@ export interface PokemonData {
   sprites: {
     front_default: string;
   };
+  types: {
+    type: {
+      name: string;
+    };
+  }[];
 }
 
 const loadCacheFromStorage = (): Record<number, PokemonData> => {
@@ -53,6 +58,7 @@ export const usePokemon = () => {
           sprites: {
             front_default: rawData.sprites.front_default,
           },
+          types: rawData.types,
         };
 
         setPokemonData(slimData);
