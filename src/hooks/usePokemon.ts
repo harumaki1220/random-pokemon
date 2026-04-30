@@ -63,7 +63,33 @@ export const usePokemon = () => {
 
         setPokemonData(slimData);
         cache.current[pokemonId] = slimData;
-        localStorage.setItem("pokemonCache", JSON.stringify(cache.current));
+
+        try {
+          localStorage.setItem("pokemonCache", JSON.stringify(cache.current));
+        } catch (err) {
+          if (
+            err instanceof Error &&
+            (err.name === "QuotaExceededError" ||
+              err.name === "NS_ERROR_DOM_QUOTA_REACHED")
+          ) {
+            console.warn("LocalStorage quota exceeded, clearing cache");
+            cache.current = { [pokemonId]: slimData };
+
+            try {
+              localStorage.setItem(
+                "pokemonCache",
+                JSON.stringify(cache.current),
+              );
+            } catch (recoveryErr) {
+              console.warn(
+                "Recovery failed. Running in memory only.",
+                recoveryErr,
+              );
+            }
+          } else {
+            console.error("Failed to save to localStorage", err);
+          }
+        }
       } catch (err) {
         setError(true);
         console.error("Fetch error:", err);
@@ -80,9 +106,12 @@ export const usePokemon = () => {
     setPokemonId(randomId);
   };
 
-  const getPokemonById = (id: number) => {
+  /**
+   * @visibleForTesting テスト用の関数です。UIコンポーネントからは呼び出さないでください。
+   */
+  const _getPokemonById = (id: number) => {
     setPokemonId(id);
   };
 
-  return { pokemonData, loading, error, getRandomPokemon, getPokemonById };
+  return { pokemonData, loading, error, getRandomPokemon, _getPokemonById };
 };
