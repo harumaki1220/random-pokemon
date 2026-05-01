@@ -23,77 +23,121 @@ const typeColors: Record<string, string> = {
 };
 
 function App() {
-  const { pokemonData, loading, error, getRandomPokemon } = usePokemon();
+  const {
+    pokemonData,
+    loading,
+    error,
+    getRandomPokemon,
+    favorites,
+    addFavorite,
+    removeFavorite,
+  } = usePokemon();
 
   const mainType = pokemonData?.types[0]?.type.name;
   const bgColor = mainType ? typeColors[mainType] : "bg-slate-100";
 
   return (
     <div
-      className={`flex flex-col items-center justify-center min-h-screen p-4 transition-colors duration-500 ${bgColor}`}
+      className={`min-h-screen p-8 transition-colors duration-500 ${bgColor}`}
     >
-      <h1
-        className={`text-4xl font-extrabold mb-8 transition-colors duration-500 ${mainType ? "text-white drop-shadow-md" : "text-slate-800"}`}
-      >
-        Random Pokémon!
-      </h1>
-
-      <div className="bg-white p-8 rounded-2xl shadow-xl text-center w-80">
-        <div className="h-48 flex flex-col items-center justify-center mb-4">
-          {error ? (
-            <p className="text-red-500 font-bold">Failed to fetch.</p>
-          ) : pokemonData ? (
-            <div className="animate-fade-in">
-              <img
-                src={pokemonData.sprites.front_default}
-                alt={pokemonData.name}
-                className="mx-auto w-32 h-32 object-contain drop-shadow-md transition-opacity duration-500"
-              />
-              <p className="text-2xl font-bold text-slate-800 capitalize mt-2">
-                {pokemonData.name}
-              </p>
-              <p className="text-sm font-bold text-slate-400 uppercase tracking-widest mt-1">
-                {mainType}
-              </p>
-            </div>
-          ) : (
-            <p className="text-slate-400">Press the button!</p>
-          )}
-        </div>
-
-        <button
-          onClick={getRandomPokemon}
-          disabled={loading}
-          className="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 px-6 rounded-full transition-colors disabled:bg-slate-400 disabled:cursor-not-allowed flex items-center justify-center"
+      <div className="max-w-4xl mx-auto">
+        <h1
+          className={`text-4xl font-extrabold mb-8 text-center transition-colors duration-500 ${mainType ? "text-white drop-shadow-md" : "text-slate-800"}`}
         >
-          {loading ? (
-            <>
-              <svg
-                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-              Searching...
-            </>
-          ) : (
-            "Get Pokémon"
-          )}
-        </button>
+          Poké Collector
+        </h1>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+          <div className="md:col-span-1 sticky top-8">
+            <div className="bg-white p-6 rounded-3xl shadow-2xl text-center border-4 border-white">
+              <div className="h-48 flex flex-col items-center justify-center mb-4">
+                {error ? (
+                  <p className="text-red-500 font-bold">Failed to fetch.</p>
+                ) : pokemonData ? (
+                  <div className="animate-fade-in">
+                    <img
+                      src={pokemonData.sprites.front_default}
+                      alt={pokemonData.name}
+                      className="mx-auto w-40 h-40 object-contain drop-shadow-lg"
+                    />
+                    <p className="text-2xl font-bold text-slate-800 capitalize mt-2">
+                      {pokemonData.name}
+                    </p>
+                    <p className="inline-block px-3 py-1 text-xs font-bold text-white bg-slate-400 rounded-full uppercase tracking-widest mb-4">
+                      {mainType}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-slate-400 italic">
+                    Press the button below!
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-3">
+                <button
+                  onClick={getRandomPokemon}
+                  disabled={loading}
+                  className="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-6 rounded-2xl transition-all active:scale-95 disabled:bg-slate-300"
+                >
+                  {loading ? "Searching..." : "Get Random"}
+                </button>
+
+                <button
+                  onClick={addFavorite}
+                  disabled={!pokemonData || loading}
+                  className="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-6 rounded-2xl transition-all active:scale-95 disabled:opacity-50"
+                >
+                  Add Favorite
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="md:col-span-2">
+            <h2
+              className={`text-xl font-bold mb-4 flex items-center gap-2 ${mainType ? "text-white" : "text-slate-800"}`}
+            >
+              <span>My Collection</span>
+              <span className="bg-white text-slate-800 text-xs py-1 px-2 rounded-full">
+                {favorites.length}
+              </span>
+            </h2>
+
+            {favorites.length === 0 ? (
+              <div className="bg-white/30 backdrop-blur-sm border-2 border-dashed border-white/50 rounded-3xl p-12 text-center">
+                <p className="text-white font-medium">
+                  No Pokémon in your collection yet.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {favorites.map((fav) => (
+                  <div
+                    key={fav.name}
+                    className="bg-white p-4 rounded-2xl shadow-md group relative hover:shadow-lg transition-shadow"
+                  >
+                    <img
+                      src={fav.sprites.front_default}
+                      alt={fav.name}
+                      className="w-20 h-20 mx-auto"
+                    />
+                    <p className="text-center font-bold text-slate-700 capitalize text-sm truncate">
+                      {fav.name}
+                    </p>
+
+                    <button
+                      onClick={() => removeFavorite(fav.name)}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

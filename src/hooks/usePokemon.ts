@@ -27,6 +27,7 @@ export const usePokemon = () => {
   const [pokemonData, setPokemonData] = useState<PokemonData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [favorites, setFavorites] = useState<PokemonData[]>([]);
 
   const cache = useRef<Record<number, PokemonData>>(loadCacheFromStorage());
 
@@ -101,6 +102,21 @@ export const usePokemon = () => {
     fetchPokemon();
   }, [pokemonId]);
 
+  const addFavorite = () => {
+    if (!pokemonData) return;
+
+    const isAlreadyFavorite = favorites.some(
+      (fav) => fav.name === pokemonData.name,
+    );
+    if (isAlreadyFavorite) return;
+
+    setFavorites([...favorites, pokemonData]);
+  };
+
+  const removeFavorite = (name: string) => {
+    setFavorites(favorites.filter((fav) => fav.name !== name));
+  };
+
   const getRandomPokemon = () => {
     const randomId = Math.floor(Math.random() * 1025) + 1;
     setPokemonId(randomId);
@@ -113,5 +129,14 @@ export const usePokemon = () => {
     setPokemonId(id);
   };
 
-  return { pokemonData, loading, error, getRandomPokemon, _getPokemonById };
+  return {
+    pokemonData,
+    loading,
+    error,
+    getRandomPokemon,
+    _getPokemonById,
+    favorites,
+    addFavorite,
+    removeFavorite,
+  };
 };
