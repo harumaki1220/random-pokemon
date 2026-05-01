@@ -80,7 +80,7 @@ function App() {
                   disabled={loading}
                   className="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-6 rounded-2xl transition-all active:scale-95 disabled:bg-slate-300"
                 >
-                  {loading ? "Searching..." : "Get Random"}
+                  {loading ? "Searching..." : "Get Pokémon"}
                 </button>
 
                 <button
